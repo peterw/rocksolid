@@ -19,7 +19,7 @@ default_context:
   domain_name: localhost:8000
   email: wpeter@vt.edu
   enable_github_login: n
-  enable_google_login: n
+  enable_google_login: y
   enable_twitter_login: n
   front_end_framework: htmx
   include_static_files: y
