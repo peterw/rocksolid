@@ -29,6 +29,7 @@
           {% endif %}
           <input class="btn btn-primary btn-block" type="submit" value="{% translate "Sign Up" %}">
         </form>
+        {% include 'account/components/social/social_buttons.html' %}
         <div class="text-sm mt-4">
           {% translate "Already have account?" %}
           <a href="{% url 'account_login' %}" class="font-medium pg-link">

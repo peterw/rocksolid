@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     "allauth",  # allauth account/registration management
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "django_htmx",
     "django_otp",
     "django_otp.plugins.otp_totp",
@@ -201,6 +202,10 @@ ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_FORMS = {
     "signup": "apps.users.forms.TermsSignupForm",
 }
+SOCIALACCOUNT_FORMS = {
+    "signup": "apps.users.forms.CustomSocialSignupForm",
+}
+
 
 # User signup configuration: change to "mandatory" to require users to confirm email before signing in.
 # or "optional" to send confirmation emails but not require them
@@ -212,6 +217,19 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+# enable social login
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    },
+}
 
 # For turnstile captchas
 TURNSTILE_KEY = env("TURNSTILE_KEY", default=None)

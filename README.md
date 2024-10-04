@@ -145,6 +145,10 @@ make translations
 ./manage.py compilemessages
 ```
 
+## Google Authentication Setup
+
+To setup Google Authentication, follow the [instructions here](https://docs.allauth.org/en/latest/socialaccount/providers/google.html).
+
 ## Installing Git commit hooks
 
 To install the Git commit hooks run the following:

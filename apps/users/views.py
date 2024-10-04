@@ -1,5 +1,6 @@
 from .adapter import user_has_valid_totp_device
 from allauth.account.utils import send_email_confirmation
+from allauth.socialaccount.models import SocialAccount
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -58,6 +59,7 @@ def profile(request):
             "active_tab": "profile",
             "page_title": _("Profile"),
             "api_keys": request.user.api_keys.filter(revoked=False),
+            "social_accounts": SocialAccount.objects.filter(user=request.user),
             "user_has_valid_totp_device": user_has_valid_totp_device(request.user),
             "now": timezone.now(),
             "current_tz": timezone.get_current_timezone(),
