@@ -1,0 +1,13 @@
+.openapi-generator-ignore
+apis/DashboardApi.ts
+apis/PegasusApi.ts
+apis/index.ts
+index.ts
+models/AggregateEmployeeData.ts
+models/DepartmentEnum.ts
+models/Employee.ts
+models/PaginatedEmployeeList.ts
+models/PatchedEmployee.ts
+models/UserSignupStats.ts
+models/index.ts
+runtime.ts

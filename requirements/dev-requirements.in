@@ -1,0 +1,5 @@
+-c requirements.txt
+pip-tools
+pre-commit
+ruff
+pegasus-cli
