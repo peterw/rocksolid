@@ -65,6 +65,10 @@ THIRD_PARTY_APPS = [
     "hijack",  # "login as" functionality
     "hijack.contrib.admin",  # hijack buttons in the admin
     "waffle",
+    "health_check",
+    "health_check.db",
+    "health_check.contrib.celery",
+    "health_check.contrib.redis",
     "django_celery_beat",
     "template_partials",
 ]
@@ -368,6 +372,10 @@ CELERY_BROKER_URL = CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # see pegasus/apps/examples/migrations/0001_celery_tasks.py for example scheduled tasks
 
+# Health Checks
+# A list of tokens that can be used to access the health check endpoint
+HEALTH_CHECK_TOKENS = env.list("HEALTH_CHECK_TOKENS", default="")
+
 
 # Pegasus config
 
@@ -389,6 +397,18 @@ ADMINS = [("Wpeter", "wpeter@vt.edu")]
 # Add your google analytics ID to the environment to connect to Google Analytics
 GOOGLE_ANALYTICS_ID = env("GOOGLE_ANALYTICS_ID", default="")
 
+
+# Sentry setup
+
+# populate this to configure sentry. should take the form: "https://****@sentry.io/12345"
+SENTRY_DSN = env("SENTRY_DSN", default="")
+
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()])
 
 LOGGING = {
     "version": 1,
