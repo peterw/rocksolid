@@ -7,6 +7,7 @@ django-waffle
 django-environ
 djangorestframework
 djangorestframework-api-key
+django-health-check
 drf-spectacular
 django-anymail[mailgun]  # email services
 django-hijack
@@ -15,3 +16,4 @@ celery
 celery[redis]
 django-celery-beat
 psycopg2-binary
+sentry-sdk

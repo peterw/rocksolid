@@ -23,7 +23,9 @@ celery[redis]==5.4.0
 celery-progress==0.4
     # via -r requirements/requirements.in
 certifi==2024.7.4
-    # via requests
+    # via
+    #   requests
+    #   sentry-sdk
 cffi==1.17.0
     # via cryptography
 charset-normalizer==3.3.2
@@ -52,6 +54,7 @@ django==5.1.1
     #   django-allauth
     #   django-anymail
     #   django-celery-beat
+    #   django-health-check
     #   django-hijack
     #   django-htmx
     #   django-otp
@@ -67,6 +70,8 @@ django-anymail[mailgun]==11.1
 django-celery-beat==2.7.0
     # via -r requirements/requirements.in
 django-environ==0.11.2
+    # via -r requirements/requirements.in
+django-health-check==3.18.3
     # via -r requirements/requirements.in
 django-hijack==3.6.0
     # via -r requirements/requirements.in
@@ -141,6 +146,8 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
+sentry-sdk==2.13.0
+    # via -r requirements/requirements.in
 six==1.16.0
     # via python-dateutil
 sqlparse==0.5.1
@@ -157,6 +164,7 @@ urllib3==2.2.2
     # via
     #   django-anymail
     #   requests
+    #   sentry-sdk
 vine==5.1.0
     # via
     #   amqp
