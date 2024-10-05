@@ -65,10 +65,6 @@ THIRD_PARTY_APPS = [
     "hijack",  # "login as" functionality
     "hijack.contrib.admin",  # hijack buttons in the admin
     "waffle",
-    "health_check",
-    "health_check.db",
-    "health_check.contrib.celery",
-    "health_check.contrib.redis",
     "django_celery_beat",
     "template_partials",
 ]
@@ -371,10 +367,6 @@ if REDIS_URL.startswith("rediss"):
 CELERY_BROKER_URL = CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # see pegasus/apps/examples/migrations/0001_celery_tasks.py for example scheduled tasks
-
-# Health Checks
-# A list of tokens that can be used to access the health check endpoint
-HEALTH_CHECK_TOKENS = env.list("HEALTH_CHECK_TOKENS", default="")
 
 
 # Pegasus config

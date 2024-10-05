@@ -54,7 +54,6 @@ django==5.1.1
     #   django-allauth
     #   django-anymail
     #   django-celery-beat
-    #   django-health-check
     #   django-hijack
     #   django-htmx
     #   django-otp
@@ -70,8 +69,6 @@ django-anymail[mailgun]==11.1
 django-celery-beat==2.7.0
     # via -r requirements/requirements.in
 django-environ==0.11.2
-    # via -r requirements/requirements.in
-django-health-check==3.18.3
     # via -r requirements/requirements.in
 django-hijack==3.6.0
     # via -r requirements/requirements.in

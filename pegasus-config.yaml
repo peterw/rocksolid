@@ -41,7 +41,7 @@ default_context:
   use_docker: y
   use_ecommerce_example: n
   use_examples: y
-  use_health_checks: y
+  use_health_checks: n
   use_impersonation: y
   use_sentry: y
   use_subscriptions: n

@@ -7,7 +7,6 @@ django-waffle
 django-environ
 djangorestframework
 djangorestframework-api-key
-django-health-check
 drf-spectacular
 django-anymail[mailgun]  # email services
 django-hijack
