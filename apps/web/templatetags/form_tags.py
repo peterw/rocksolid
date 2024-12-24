@@ -49,7 +49,7 @@ def render_checkbox_input(form_field, **attrs):
     <div class="form-control" {% include "django/forms/attrs.html" %}>
       <div class="form-check">
         <label class="label font-bold cursor-pointer">
-          <span class="label-text">{{ form_field.label }}</span> 
+          <span class="label-text">{{ form_field.label }}</span>
           {{ form_field }}
         </label>
       </div>

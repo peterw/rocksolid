@@ -17,16 +17,17 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 RUN mkdir /code
 WORKDIR /code
 
-# install python requirements
-RUN pip install --upgrade pip
+# install uv
+COPY --from=ghcr.io/astral-sh/uv:0.5.2 /uv /uvx /bin/
 
-# copy just requirements and install before rest of code to avoid having to
+# install python requirements
+# copy just dependency file(s) and install before rest of code to avoid having to
 # reinstall packages during build every time code changes
 COPY requirements.txt requirements.txt
 COPY dev-requirements.txt dev-requirements.txt
 COPY requirements requirements/
 RUN --mount=type=cache,target=/root/.cache \
-    pip install -r dev-requirements.txt
+    uv pip install --system -r dev-requirements.txt
 
 # copy code files
 COPY . /code/

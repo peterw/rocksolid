@@ -18,6 +18,7 @@ import {
     DepartmentEnumFromJSON,
     DepartmentEnumFromJSONTyped,
     DepartmentEnumToJSON,
+    DepartmentEnumToJSONTyped,
 } from './DepartmentEnum';
 
 /**
@@ -70,17 +71,19 @@ export interface Employee {
     readonly updatedAt: Date;
 }
 
+
+
 /**
  * Check if a given object implements the Employee interface.
  */
-export function instanceOfEmployee(value: object): boolean {
-    if (!('id' in value)) return false;
-    if (!('user' in value)) return false;
-    if (!('name' in value)) return false;
-    if (!('department' in value)) return false;
-    if (!('salary' in value)) return false;
-    if (!('createdAt' in value)) return false;
-    if (!('updatedAt' in value)) return false;
+export function instanceOfEmployee(value: object): value is Employee {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('user' in value) || value['user'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('department' in value) || value['department'] === undefined) return false;
+    if (!('salary' in value) || value['salary'] === undefined) return false;
+    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
+    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
     return true;
 }
 
@@ -104,10 +107,15 @@ export function EmployeeFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function EmployeeToJSON(value?: Omit<Employee, 'id'|'user'|'created_at'|'updated_at'> | null): any {
+  export function EmployeeToJSON(json: any): Employee {
+      return EmployeeToJSONTyped(json, false);
+  }
+
+  export function EmployeeToJSONTyped(value?: Omit<Employee, 'id'|'user'|'created_at'|'updated_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

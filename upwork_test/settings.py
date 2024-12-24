@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/stable/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -59,14 +60,18 @@ THIRD_PARTY_APPS = [
     "django_otp.plugins.otp_static",
     "allauth.mfa",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "drf_spectacular",
-    "rest_framework_api_key",
     "celery_progress",
     "hijack",  # "login as" functionality
     "hijack.contrib.admin",  # hijack buttons in the admin
     "waffle",
     "django_celery_beat",
-    "template_partials",
+    "template_partials.apps.SimpleAppConfig",
 ]
 
 PEGASUS_APPS = [
@@ -76,9 +81,9 @@ PEGASUS_APPS = [
 
 # Put your project-specific apps here
 PROJECT_APPS = [
+    "apps.authentication.apps.AuthenticationConfig",
     "apps.users.apps.UserConfig",
     "apps.dashboard.apps.DashboardConfig",
-    "apps.api.apps.APIConfig",
     "apps.web",
 ]
 
@@ -86,6 +91,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PEGASUS_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -93,8 +99,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "apps.web.locale_middleware.UserLocaleMiddleware",
-    "apps.web.locale_middleware.UserTimezoneMiddleware",
+    "apps.web.middleware.locale.UserLocaleMiddleware",
+    "apps.web.middleware.locale.UserTimezoneMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "hijack.middleware.HijackUserMiddleware",
@@ -107,13 +113,30 @@ ROOT_URLCONF = "upwork_test.urls"
 
 # used to disable the cache in dev, but turn it on in production.
 # more here: https://nickjanetakis.com/blog/django-4-1-html-templates-are-cached-by-default-with-debug-true
-_DEFAULT_LOADERS = [
+_LOW_LEVEL_LOADERS = [
     "django.template.loaders.filesystem.Loader",
     "django.template.loaders.app_directories.Loader",
 ]
 
-_CACHED_LOADERS = [("django.template.loaders.cached.Loader", _DEFAULT_LOADERS)]
+# Manually load template partials to allow for easier integration with other templating systems
+# like django-cotton.
+# https://github.com/carltongibson/django-template-partials?tab=readme-ov-file#advanced-configuration
 
+_DEFAULT_LOADERS = [
+    (
+        "template_partials.loader.Loader",
+        _LOW_LEVEL_LOADERS,
+    ),
+]
+
+_CACHED_LOADERS = [
+    (
+        "template_partials.loader.Loader",
+        [
+            ("django.template.loaders.cached.Loader", _LOW_LEVEL_LOADERS),
+        ],
+    ),
+]
 
 TEMPLATES = [
     {
@@ -132,6 +155,9 @@ TEMPLATES = [
                 "apps.web.context_processors.google_analytics_id",
             ],
             "loaders": _DEFAULT_LOADERS if DEBUG else _CACHED_LOADERS,
+            "builtins": [
+                "template_partials.templatetags.partials",
+            ],
         },
     },
 ]
@@ -157,7 +183,7 @@ else:
         }
     }
 
-# Auth / login stuff
+# Auth and Login
 
 # Django recommends overriding the user model even if you don"t think you need to because it makes
 # future changes much easier.
@@ -221,6 +247,13 @@ AUTHENTICATION_BACKENDS = (
 # enable social login
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
+        "APPS": [
+            {
+                "client_id": env("GOOGLE_CLIENT_ID", default=""),
+                "secret": env("GOOGLE_SECRET_ID", default=""),
+                "key": "",
+            },
+        ],
         "SCOPE": [
             "profile",
             "email",
@@ -322,12 +355,31 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": ("apps.api.permissions.IsAuthenticatedOrHasUserAPIKey",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 }
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": True,
+    "SIGNING_KEY": env("SIMPLE_JWT_SIGNING_KEY", default="<a comlex signing key>"),
+    "ALGORITHM": "HS512",
+}
+
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
+    "USER_DETAILS_SERIALIZER": "apps.users.serializers.CustomUserSerializer",
+}
+
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:5173"])
 
 
 SPECTACULAR_SETTINGS = {
@@ -338,17 +390,6 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_SETTINGS": {
         "displayOperationId": True,
     },
-    "PREPROCESSING_HOOKS": [
-        "apps.api.schema.filter_schema_apis",
-    ],
-    "APPEND_COMPONENTS": {
-        "securitySchemes": {"ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "Authorization"}}
-    },
-    "SECURITY": [
-        {
-            "ApiKeyAuth": [],
-        }
-    ],
 }
 
 # Celery setup (using redis)
@@ -389,6 +430,11 @@ ADMINS = [("Wpeter", "wpeter@vt.edu")]
 # Add your google analytics ID to the environment to connect to Google Analytics
 GOOGLE_ANALYTICS_ID = env("GOOGLE_ANALYTICS_ID", default="")
 
+# these daisyui themes are used to set the dark and light themes for the site
+# they must be valid themes included in your tailwind.config.js file.
+# more here: https://daisyui.com/docs/themes/
+LIGHT_THEME = "light"
+DARK_THEME = "dark"
 
 # Sentry setup
 

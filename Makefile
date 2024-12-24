@@ -25,36 +25,37 @@ bash: ## Get a bash shell into the web container
 	docker compose run --rm --no-deps web bash
 
 manage: ## Run any manage.py command. E.g. `make manage ARGS='createsuperuser'`
-	@docker compose run --rm --no-deps web python manage.py ${ARGS}
+	@docker compose run --rm web python manage.py ${ARGS}
 
 migrations: ## Create DB migrations in the container
-	@docker compose run --rm --no-deps web python manage.py makemigrations
+	@docker compose run --rm web python manage.py makemigrations
 
 migrate: ## Run DB migrations in the container
-	@docker compose run --rm --no-deps web python manage.py migrate
+	@docker compose run --rm web python manage.py migrate
 
 translations:
-	@docker compose run --rm --no-deps web python manage.py makemessages --all --ignore node_modules --ignore venv
-	@docker compose run --rm --no-deps web python manage.py makemessages -d djangojs --all --ignore node_modules --ignore venv
-	@docker compose run --rm --no-deps web python manage.py compilemessages
+	@docker compose run --rm --no-deps web python manage.py makemessages --all --ignore node_modules --ignore venv --ignore .venv
+	@docker compose run --rm --no-deps web python manage.py makemessages -d djangojs --all --ignore node_modules --ignore venv --ignore .venv
+	@docker compose run --rm --no-deps web python manage.py compilemessages --ignore venv --ignore .venv
 
 shell: ## Get a Django shell
-	@docker compose run --rm --no-deps web python manage.py shell
+	@docker compose run --rm web python manage.py shell
 
 dbshell: ## Get a Database shell
 	@docker compose exec db psql -U postgres upwork_test
 
 test: ## Run Django tests
-	@docker compose run --rm --no-deps web python manage.py test ${ARGS}
+	@docker compose run --rm web python manage.py test ${ARGS}
 
 init: setup-env start-bg migrations migrate  ## Quickly get up and running (start containers and migrate DB)
 
+pip_compile_cmd = uv pip compile --no-emit-package setuptools --no-strip-extras
 pip-compile: ## Compiles your requirements.in file to requirements.txt
-	@docker compose run --rm --no-deps web pip-compile requirements/requirements.in
-	@docker compose run --rm --no-deps web pip-compile requirements/dev-requirements.in
-	@docker compose run --rm --no-deps web pip-compile requirements/prod-requirements.in
+	@docker compose run --rm --no-deps web $(pip_compile_cmd) requirements/requirements.in -o requirements/requirements.txt
+	@docker compose run --rm --no-deps web $(pip_compile_cmd) requirements/dev-requirements.in -o requirements/dev-requirements.txt
+	@docker compose run --rm --no-deps web $(pip_compile_cmd) requirements/prod-requirements.in -o requirements/prod-requirements.txt
 
-requirements: pip-compile build restart  ## Rebuild your requirements and restart your containers
+requirements: pip-compile build stop start-bg  ## Rebuild your requirements and restart your containers
 
 ruff-format: ## Runs ruff formatter on the codebase
 	@docker compose run --rm --no-deps web ruff format .
@@ -83,15 +84,20 @@ npm-type-check: ## Runs the type checker on the front end TypeScript code
 	@docker compose run --rm --no-deps web npm run type-check
 
 build-api-client:  ## Update the JavaScript API client code.
-	@docker run --rm --network host -v $(shell pwd)/api-client:/local openapitools/openapi-generator-cli:v7.5.0 generate \
+	@docker run --rm --network host -v $(shell pwd)/api-client:/local openapitools/openapi-generator-cli:v7.9.0 generate \
 	-i http://localhost:8000/api/schema/ \
 	-g typescript-fetch \
 	-o /local/
 
-upgrade: pip-compile build start-bg migrations migrate npm-install npm-dev
+upgrade: requirements migrations migrate npm-install npm-dev
 
 .PHONY: help
 .DEFAULT_GOAL := help
 
 help:
-	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -hE '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+# catch-all for any undefined targets - this prevents error messages
+# when running things like make npm-install <package>
+%:
+	@:

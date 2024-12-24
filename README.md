@@ -25,7 +25,7 @@ You can then go to [localhost:8000](http://localhost:8000/) to view the app.
 You can run `make` to see other helper functions, and you can view the source
 of the file in case you need to run any specific commands.
 
-For example, you can run management commands in containers using the same method 
+For example, you can run management commands in containers using the same method
 used in the `Makefile`. E.g.
 
 ```
@@ -35,7 +35,6 @@ docker compose exec web python manage.py createsuperuser
 ## Installation - Native
 
 You can also install/run the app directly on your OS using the instructions below.
-
 Setup a virtualenv and install requirements
 (this example uses [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)):
 
@@ -57,13 +56,13 @@ createdb upwork_test
 Create database migrations:
 
 ```
-./manage.py makemigrations
+python manage.py makemigrations
 ```
 
 Create database tables:
 
 ```
-./manage.py migrate
+python manage.py migrate
 ```
 
 ## Running server
@@ -77,7 +76,7 @@ make start
 **Native:**
 
 ```bash
-./manage.py runserver
+python manage.py runserver
 ```
 
 ## Building front-end
@@ -140,9 +139,9 @@ make translations
 **Native:**
 
 ```bash
-./manage.py makemessages --all --ignore node_modules --ignore venv
-./manage.py makemessages -d djangojs --all --ignore node_modules --ignore venv
-./manage.py compilemessages
+python manage.py makemessages --all --ignore node_modules --ignore .venv
+python manage.py makemessages -d djangojs --all --ignore node_modules --ignore .venv
+python manage.py compilemessages --ignore .venv
 ```
 
 ## Google Authentication Setup
@@ -174,7 +173,7 @@ make test
 **Native:**
 
 ```bash
-./manage.py test
+python manage.py test
 ```
 
 Or to test a specific app/module:
@@ -188,7 +187,7 @@ make test ARGS='apps.utils.tests.test_slugs --keepdb'
 **Native:**
 
 ```bash
-./manage.py test apps.utils.tests.test_slugs
+python manage.py test apps.utils.tests.test_slugs
 ```
 
 On Linux-based systems you can watch for changes using the following:
@@ -202,5 +201,5 @@ find . -name '*.py' | entr docker compose exec web python manage.py test apps.ut
 **Native:**
 
 ```bash
-find . -name '*.py' | entr python ./manage.py test apps.utils.tests.test_slugs
+find . -name '*.py' | entr python manage.py test apps.utils.tests.test_slugs
 ```

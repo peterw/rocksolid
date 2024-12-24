@@ -200,7 +200,7 @@
   /* cards */
 
   .pg-card {
-    @apply card bg-base-100 shadow-xl
+    @apply card shadow-xl
   }
 
   /*.pg-card-image*/

@@ -5,7 +5,7 @@ cli:
   template_directory: templates
   use_teams: false
 default_context:
-  _pegasus_version: 2024.9.3
+  _pegasus_version: '2024.12'
   ai_chat_mode: none
   ai_image_mode: none
   author_name: Wpeter
@@ -22,28 +22,33 @@ default_context:
   enable_google_login: y
   enable_twitter_login: n
   front_end_framework: htmx
+  github_username: peterw
   include_static_files: y
   marketing_email_platform: none
   post_process: y
   project_name: upwork_test
   project_slug: upwork_test
+  python_package_manager: pip-tools
   standalone_front_end: none
   stripe_payment_mode: checkout
   subscription_billing_model: default
   subscription_pricing_ui: in_app
   use_2fa: y
   use_admin_docs: n
-  use_api_auth: n
-  use_api_keys: y
+  use_api_auth: y
+  use_api_keys: n
   use_async_example: n
   use_cloud_media_storage: n
+  use_dark_mode: y
   use_debug_toolbar: n
   use_docker: y
   use_ecommerce_example: n
   use_examples: y
+  use_flowbite: n
   use_health_checks: n
   use_impersonation: y
   use_sentry: y
+  use_shadcn: n
   use_subscriptions: n
   use_teams: n
   use_teams_example: n

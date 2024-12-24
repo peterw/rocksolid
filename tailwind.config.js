@@ -1,13 +1,13 @@
 module.exports = {
+  daisyui: {
+    themes: ["light", "dark"],
+  },
+  darkMode: ["class", '[data-theme="dark"]'],
   content: [
     './apps/**/*.html',
-    './assets/**/*.js',
-    './assets/**/*.ts',
-    './assets/**/*.jsx',
-    './assets/**/*.tsx',
-    './assets/**/*.vue',
-    './templates/**/*.html',
     './apps/web/templatetags/form_tags.py',
+    './assets/**/*.{js,ts,jsx,tsx,vue}',
+    './templates/**/*.html',
   ],
   safelist: [
     'alert-success',
@@ -25,7 +25,6 @@ module.exports = {
     },
     container: {
       center: true,
-      // padding: '2rem',
     },
   },
   variants: {

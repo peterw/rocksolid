@@ -32,7 +32,14 @@ export type DepartmentEnum = typeof DepartmentEnum[keyof typeof DepartmentEnum];
 
 
 export function instanceOfDepartmentEnum(value: any): boolean {
-    return Object.values(DepartmentEnum).includes(value);
+    for (const key in DepartmentEnum) {
+        if (Object.prototype.hasOwnProperty.call(DepartmentEnum, key)) {
+            if (DepartmentEnum[key as keyof typeof DepartmentEnum] === value) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 export function DepartmentEnumFromJSON(json: any): DepartmentEnum {
@@ -45,5 +52,9 @@ export function DepartmentEnumFromJSONTyped(json: any, ignoreDiscriminator: bool
 
 export function DepartmentEnumToJSON(value?: DepartmentEnum | null): any {
     return value as any;
+}
+
+export function DepartmentEnumToJSONTyped(value: any, ignoreDiscriminator: boolean): DepartmentEnum {
+    return value as DepartmentEnum;
 }
 

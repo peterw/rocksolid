@@ -42,10 +42,10 @@ export interface AggregateEmployeeData {
 /**
  * Check if a given object implements the AggregateEmployeeData interface.
  */
-export function instanceOfAggregateEmployeeData(value: object): boolean {
-    if (!('totalCosts' in value)) return false;
-    if (!('averageSalaries' in value)) return false;
-    if (!('headcounts' in value)) return false;
+export function instanceOfAggregateEmployeeData(value: object): value is AggregateEmployeeData {
+    if (!('totalCosts' in value) || value['totalCosts'] === undefined) return false;
+    if (!('averageSalaries' in value) || value['averageSalaries'] === undefined) return false;
+    if (!('headcounts' in value) || value['headcounts'] === undefined) return false;
     return true;
 }
 
@@ -65,10 +65,15 @@ export function AggregateEmployeeDataFromJSONTyped(json: any, ignoreDiscriminato
     };
 }
 
-export function AggregateEmployeeDataToJSON(value?: AggregateEmployeeData | null): any {
+  export function AggregateEmployeeDataToJSON(json: any): AggregateEmployeeData {
+      return AggregateEmployeeDataToJSONTyped(json, false);
+  }
+
+  export function AggregateEmployeeDataToJSONTyped(value?: AggregateEmployeeData | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'total_costs': value['totalCosts'],
