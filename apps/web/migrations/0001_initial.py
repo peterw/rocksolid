@@ -10,7 +10,8 @@ def create_site(apps, schema_editor):
     )[0]
     # strip leading http:// from site url since django sites framework doesn't expect it
     site.domain = settings.PROJECT_METADATA['URL'].replace('http://', '').replace('https://', '')
-    site.name = settings.PROJECT_METADATA['NAME']
+    # site names have a max of 50 chars
+    site.name = settings.PROJECT_METADATA['NAME'][:50]
     site.save()
 
 

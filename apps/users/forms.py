@@ -2,6 +2,7 @@ import logging
 import requests
 
 from allauth.account.forms import SignupForm
+from allauth.socialaccount.forms import SignupForm as SocialSignupForm
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserChangeForm
@@ -81,3 +82,12 @@ class TermsSignupForm(TurnstileSignupForm):
             _("Terms and Conditions"),
         )
         self.fields["terms_agreement"].label = mark_safe(_("I agree to the {terms_link}").format(terms_link=link))
+
+
+class CustomSocialSignupForm(SocialSignupForm):
+    """Custom social signup form to work around this issue:
+    https://github.com/pennersr/django-allauth/issues/3266."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.prevent_enumeration = False

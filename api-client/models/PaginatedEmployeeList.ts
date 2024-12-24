@@ -18,6 +18,7 @@ import {
     EmployeeFromJSON,
     EmployeeFromJSONTyped,
     EmployeeToJSON,
+    EmployeeToJSONTyped,
 } from './Employee';
 
 /**
@@ -37,13 +38,13 @@ export interface PaginatedEmployeeList {
      * @type {string}
      * @memberof PaginatedEmployeeList
      */
-    next?: string;
+    next?: string | null;
     /**
      * 
      * @type {string}
      * @memberof PaginatedEmployeeList
      */
-    previous?: string;
+    previous?: string | null;
     /**
      * 
      * @type {Array<Employee>}
@@ -55,9 +56,9 @@ export interface PaginatedEmployeeList {
 /**
  * Check if a given object implements the PaginatedEmployeeList interface.
  */
-export function instanceOfPaginatedEmployeeList(value: object): boolean {
-    if (!('count' in value)) return false;
-    if (!('results' in value)) return false;
+export function instanceOfPaginatedEmployeeList(value: object): value is PaginatedEmployeeList {
+    if (!('count' in value) || value['count'] === undefined) return false;
+    if (!('results' in value) || value['results'] === undefined) return false;
     return true;
 }
 
@@ -78,10 +79,15 @@ export function PaginatedEmployeeListFromJSONTyped(json: any, ignoreDiscriminato
     };
 }
 
-export function PaginatedEmployeeListToJSON(value?: PaginatedEmployeeList | null): any {
+  export function PaginatedEmployeeListToJSON(json: any): PaginatedEmployeeList {
+      return PaginatedEmployeeListToJSONTyped(json, false);
+  }
+
+  export function PaginatedEmployeeListToJSONTyped(value?: PaginatedEmployeeList | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'count': value['count'],

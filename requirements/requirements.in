@@ -6,7 +6,9 @@ django-template-partials
 django-waffle
 django-environ
 djangorestframework
-djangorestframework-api-key
+djangorestframework-simplejwt
+dj-rest-auth
+django-cors-headers
 drf-spectacular
 django-anymail[mailgun]  # email services
 django-hijack
@@ -15,3 +17,4 @@ celery
 celery[redis]
 django-celery-beat
 psycopg2-binary
+sentry-sdk

@@ -36,9 +36,9 @@ export interface UserSignupStats {
 /**
  * Check if a given object implements the UserSignupStats interface.
  */
-export function instanceOfUserSignupStats(value: object): boolean {
-    if (!('date' in value)) return false;
-    if (!('count' in value)) return false;
+export function instanceOfUserSignupStats(value: object): value is UserSignupStats {
+    if (!('date' in value) || value['date'] === undefined) return false;
+    if (!('count' in value) || value['count'] === undefined) return false;
     return true;
 }
 
@@ -57,10 +57,15 @@ export function UserSignupStatsFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function UserSignupStatsToJSON(value?: UserSignupStats | null): any {
+  export function UserSignupStatsToJSON(json: any): UserSignupStats {
+      return UserSignupStatsToJSONTyped(json, false);
+  }
+
+  export function UserSignupStatsToJSONTyped(value?: UserSignupStats | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'date': ((value['date']).toISOString().substring(0,10)),

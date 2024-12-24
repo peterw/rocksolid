@@ -12,9 +12,6 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.helpers import get_user_from_request
-from apps.api.permissions import IsAuthenticatedOrHasUserAPIKey
-
 from .forms import EmployeeForm
 from .models import Employee
 from .serializers import EmployeeSerializer, AggregateEmployeeDataSerializer
@@ -142,6 +139,7 @@ def delete_employee_htmx(request, employee_id):
 class ObjectLifecycleView(TemplateView):
     def get_context_data(self, **kwargs):
         return {
+            "active_tab": "object_lifecycle",
             "department_choices": [{"id": c[0], "name": c[1]} for c in Employee.DEPARTMENT_CHOICES],
         }
 
@@ -156,7 +154,6 @@ class ReactObjectLifecycleView(ObjectLifecycleView):
                 "framework_url": "https://reactjs.org/",
                 "framework_name": "React",
                 "framework_icon": static("images/pegasus/react-icon.png"),
-                "active_tab": "object_lifecycle",
                 "url_base": reverse("pegasus_employees:react_object_lifecycle"),
             }
         )
@@ -173,7 +170,6 @@ class VueObjectLifecycleView(ObjectLifecycleView):
                 "framework_url": "https://vuejs.org/",
                 "framework_name": "Vue.js",
                 "framework_icon": static("images/pegasus/vue-icon.png"),
-                "active_tab": "object_lifecycle",
                 "url_base": reverse("pegasus_employees:vue_object_lifecycle"),
             }
         )
@@ -191,11 +187,9 @@ class ChartsView(TemplateView):
 
 
 class EmployeeDataAPIView(APIView):
-    permission_classes = (IsAuthenticatedOrHasUserAPIKey,)
-
     @extend_schema(operation_id="employees_aggregate_data", responses={200: AggregateEmployeeDataSerializer})
     def get(self, request):
-        user = get_user_from_request(request)
+        user = request.user
         data = user.employees.values("department").annotate(
             average_salary=Avg("salary"),
             total_cost=Sum("salary"),

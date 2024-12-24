@@ -18,6 +18,7 @@ import {
     DepartmentEnumFromJSON,
     DepartmentEnumFromJSONTyped,
     DepartmentEnumToJSON,
+    DepartmentEnumToJSONTyped,
 } from './DepartmentEnum';
 
 /**
@@ -70,10 +71,12 @@ export interface PatchedEmployee {
     readonly updatedAt?: Date;
 }
 
+
+
 /**
  * Check if a given object implements the PatchedEmployee interface.
  */
-export function instanceOfPatchedEmployee(value: object): boolean {
+export function instanceOfPatchedEmployee(value: object): value is PatchedEmployee {
     return true;
 }
 
@@ -97,10 +100,15 @@ export function PatchedEmployeeFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function PatchedEmployeeToJSON(value?: Omit<PatchedEmployee, 'id'|'user'|'created_at'|'updated_at'> | null): any {
+  export function PatchedEmployeeToJSON(json: any): PatchedEmployee {
+      return PatchedEmployeeToJSONTyped(json, false);
+  }
+
+  export function PatchedEmployeeToJSONTyped(value?: Omit<PatchedEmployee, 'id'|'user'|'created_at'|'updated_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

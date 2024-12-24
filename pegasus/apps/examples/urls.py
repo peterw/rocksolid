@@ -9,13 +9,6 @@ app_name = "pegasus_examples"
 urlpatterns = [
     path("", views.ExamplesHomeView.as_view(), name="examples_home"),
     path(
-        "landing-page/",
-        TemplateView.as_view(
-            template_name="pegasus/examples/example_landing_page.html", extra_context={"active_tab": "landing_page"}
-        ),
-        name="landing_page",
-    ),
-    path(
         "pricing-page/",
         TemplateView.as_view(
             template_name="pegasus/examples/example_pricing_page.html", extra_context={"active_tab": "pricing_page"}

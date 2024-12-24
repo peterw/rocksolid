@@ -1,16 +1,14 @@
 from .adapter import user_has_valid_totp_device
 from allauth.account.utils import send_email_confirmation
+from allauth.socialaccount.models import SocialAccount
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.urls import reverse
 from django.utils import translation, timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
-
-from apps.api.models import UserAPIKey
 
 from .forms import CustomUserChangeForm, UploadAvatarForm
 from .helpers import require_email_confirmation, user_has_confirmed_email_address
@@ -57,7 +55,7 @@ def profile(request):
             "form": form,
             "active_tab": "profile",
             "page_title": _("Profile"),
-            "api_keys": request.user.api_keys.filter(revoked=False),
+            "social_accounts": SocialAccount.objects.filter(user=request.user),
             "user_has_valid_totp_device": user_has_valid_totp_device(request.user),
             "now": timezone.now(),
             "current_tz": timezone.get_current_timezone(),
@@ -77,33 +75,3 @@ def upload_profile_image(request):
     else:
         readable_errors = ", ".join(str(error) for key, errors in form.errors.items() for error in errors)
         return JsonResponse(status=403, data={"errors": readable_errors})
-
-
-@login_required
-def create_api_key(request):
-    api_key, key = UserAPIKey.objects.create_key(
-        name=f"{request.user.get_display_name()[:40]} API Key", user=request.user
-    )
-    messages.success(
-        request,
-        _("API Key created. Your key is: {key}. Save this somewhere safe - you will only see it once!").format(
-            key=key,
-        ),
-    )
-    return HttpResponseRedirect(reverse("users:user_profile"))
-
-
-@login_required
-@require_POST
-def revoke_api_key(request):
-    key_id = request.POST.get("key_id")
-    api_key = request.user.api_keys.get(id=key_id)
-    api_key.revoked = True
-    api_key.save()
-    messages.success(
-        request,
-        _("API Key {key} has been revoked. It can no longer be used to access the site.").format(
-            key=api_key.prefix,
-        ),
-    )
-    return HttpResponseRedirect(reverse("users:user_profile"))

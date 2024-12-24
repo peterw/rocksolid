@@ -5,7 +5,9 @@
   {% include 'account/components/profile_form.html' %}
 </section>
 {% include 'account/components/2fa.html' %}
-{% include 'account/components/api_keys.html' %}
+<section class="app-card">
+  {% include 'account/components/social/social_accounts.html' %}
+</section>
 {% endblock %}
 {% block page_js %}
 <script src="{% static 'js/app-bundle.js' %}" defer></script>
